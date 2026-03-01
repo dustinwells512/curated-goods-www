@@ -179,6 +179,27 @@ export default function ContactForm({
           ))}
         </div>
         <p className="mt-1 text-xs text-warm-400">Select all that interest you</p>
+        <p className="mt-3 text-xs text-warm-500 leading-relaxed">
+          Looking for the Steinway Piano or Sprinter Van? These items have
+          dedicated sites:{" "}
+          <a
+            href="https://piano.dustinwells.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent underline decoration-accent/30 hover:decoration-accent"
+          >
+            piano.dustinwells.com
+          </a>
+          {" "}&middot;{" "}
+          <a
+            href="https://sprinter.dustinwells.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent underline decoration-accent/30 hover:decoration-accent"
+          >
+            sprinter.dustinwells.com
+          </a>
+        </p>
       </div>
 
       <div>
