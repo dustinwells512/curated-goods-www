@@ -1,7 +1,8 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ItemCard from "@/components/ItemCard";
-import InquiryForm from "@/components/InquiryForm";
+import ContactForm from "@/components/ContactForm";
+import VisitTracker from "@/components/VisitTracker";
 import { items, getFeaturedItems, getCategories } from "@/data/items";
 
 export default function Home() {
@@ -11,6 +12,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-warm-50">
+      <VisitTracker />
       <Header />
 
       {/* Hero */}
@@ -185,7 +187,7 @@ export default function Home() {
               </p>
             </div>
             <div className="rounded-2xl border border-warm-200 bg-white p-6 shadow-sm sm:p-8">
-              <InquiryForm />
+              <ContactForm />
             </div>
           </div>
         </div>
