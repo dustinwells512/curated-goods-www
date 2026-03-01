@@ -61,7 +61,7 @@ export default function InquiryForm({
           Message Sent!
         </h3>
         <p className="mt-2 text-sm text-green-700">
-          Thanks for your interest. We&apos;ll get back to you shortly.
+          Thanks for your interest. I&apos;ll get back to you shortly.
         </p>
       </div>
     );

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Curated Goods — Quality Items For Sale",
   description:
-    "Quality items from our home to yours. Browse furniture, vehicles, instruments, and more — all personally selected and well cared for.",
+    "Quality items from my home to yours. Browse furniture, vehicles, instruments, and more — all personally selected and well cared for.",
 };
 
 export default function RootLayout({

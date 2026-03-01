@@ -21,7 +21,7 @@ export default function Home() {
             Curated Goods
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-lg text-warm-300">
-            Quality items from our home to yours. Each piece has been personally
+            Quality items from my home to yours. Each piece has been personally
             selected and well cared for.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -46,7 +46,7 @@ export default function Home() {
         <div className="mb-10 text-center">
           <h2 className="text-3xl font-bold text-warm-900">Featured Items</h2>
           <p className="mt-2 text-warm-500">
-            Our highlight pieces — click for full details
+            Highlight pieces — click for full details
           </p>
         </div>
         <div className="grid gap-8 md:grid-cols-2">
@@ -88,9 +88,9 @@ export default function Home() {
               About This Sale
             </h2>
             <p className="mt-6 text-lg leading-relaxed text-warm-600">
-              We&apos;re downsizing and letting go of some wonderful items that
-              have served us well. Everything listed here is in good condition
-              and priced to move. We believe in transparency — what you see is
+              I&apos;m downsizing and letting go of some wonderful items that
+              have served me well. Everything listed here is in good condition
+              and priced to move. I believe in transparency — what you see is
               what you get.
             </p>
             <div className="mt-10 grid gap-8 text-center sm:grid-cols-3">
@@ -160,7 +160,7 @@ export default function Home() {
                   Fair Pricing
                 </h3>
                 <p className="mt-1 text-sm text-warm-500">
-                  Reasonable prices with room to discuss. We want these items to
+                  Reasonable prices with room to discuss. I want these items to
                   find good homes.
                 </p>
               </div>
@@ -181,7 +181,7 @@ export default function Home() {
                 Interested in Something?
               </h2>
               <p className="mt-2 text-warm-500">
-                Send us a message and we&apos;ll get back to you quickly.
+                Send me a message and I&apos;ll get back to you quickly.
               </p>
             </div>
             <div className="rounded-2xl border border-warm-200 bg-white p-6 shadow-sm sm:p-8">

@@ -170,7 +170,7 @@ export default async function ItemPage({
                 Interested in the {item.title}?
               </h2>
               <p className="mt-2 text-warm-500">
-                Send us a message and we&apos;ll get back to you.
+                Send me a message and I&apos;ll get back to you.
               </p>
             </div>
             <div className="rounded-2xl border border-warm-200 bg-white p-6 shadow-sm sm:p-8">

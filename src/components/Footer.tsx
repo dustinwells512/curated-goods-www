@@ -7,7 +7,7 @@ export default function Footer() {
             Curated Goods
           </span>
           <p className="max-w-md text-sm text-warm-500">
-            Quality items, personally selected. Each piece has been part of our
+            Quality items, personally selected. Each piece has been part of my
             home and is ready for its next chapter.
           </p>
           <p className="mt-4 text-xs text-warm-400">
