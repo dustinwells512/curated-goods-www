@@ -7,9 +7,10 @@ export interface Item {
   category: string;
   description: string;
   details: string[];
-  image: string;
+  images: string[];
   imageAlt: string;
   hasDedicatedPage: boolean;
+  externalUrl?: string;
   featured: boolean;
   status: "available" | "pending" | "sold";
 }
@@ -32,7 +33,7 @@ export const items: Item[] = [
       "Solar panel system",
       "Well-maintained with service records",
     ],
-    image: "/images/sprinter-van.jpg",
+    images: [],
     imageAlt: "Mercedes Sprinter Van - camper conversion",
     hasDedicatedPage: true,
     featured: true,
@@ -41,22 +42,27 @@ export const items: Item[] = [
   {
     id: "piano",
     slug: "piano",
-    title: "Upright Piano",
-    subtitle: "Beautiful tone, well-maintained",
-    price: "Contact for Price",
+    title: "Custom Art Steinway Grand Piano",
+    subtitle: "1955 Model L — One-of-a-kind hand-painted masterpiece",
+    price: "$27,500",
     category: "Instruments",
     description:
-      "A beautiful upright piano with rich, warm tone. Well-maintained and recently tuned. Perfect for beginners and intermediate players alike. A wonderful addition to any home.",
+      "A one-of-a-kind 1955 Steinway Model L grand piano featuring custom hand-painted artwork by Austin muralist Elenor Niz. Where music meets art — vibrant blues, turquoise, hand-painted lions, landscapes, and pop culture elements make this a true statement piece.",
     details: [
-      "Recently tuned and serviced",
-      "Rich, warm tone",
-      "Good condition with minor cosmetic wear",
-      "Includes bench",
-      "Buyer responsible for pickup/moving",
+      "1955 Steinway Model L, Serial #348346",
+      "5'10\" L x 57\" W x 36\" H",
+      "88 fully functional keys",
+      "Custom mixed media artwork by Elenor Niz",
+      "Located in South Austin — viewing by appointment",
     ],
-    image: "/images/piano.jpg",
-    imageAlt: "Upright piano in excellent condition",
-    hasDedicatedPage: true,
+    images: [
+      "/images/piano-hero.png",
+      "/images/piano-lion.png",
+      "/images/piano-studio.png",
+    ],
+    imageAlt: "Custom Art Steinway Grand Piano with hand-painted artwork",
+    hasDedicatedPage: false,
+    externalUrl: "https://piano.dustinwells.com",
     featured: true,
     status: "available",
   },
@@ -75,7 +81,7 @@ export const items: Item[] = [
       "Farmhouse style",
       "Dimensions: 72\" x 36\" x 30\"",
     ],
-    image: "/images/dining-table.jpg",
+    images: [],
     imageAlt: "Solid wood farmhouse dining table",
     hasDedicatedPage: false,
     featured: false,
@@ -96,7 +102,7 @@ export const items: Item[] = [
       "5 adjustable shelves",
       "Dimensions: 36\" x 12\" x 72\"",
     ],
-    image: "/images/bookshelf.jpg",
+    images: [],
     imageAlt: "Mid-century modern bookshelf with walnut finish",
     hasDedicatedPage: false,
     featured: false,
@@ -117,7 +123,7 @@ export const items: Item[] = [
       "Solid wood frame",
       "Excellent condition",
     ],
-    image: "/images/accent-chair.jpg",
+    images: [],
     imageAlt: "Cognac leather accent chair",
     hasDedicatedPage: false,
     featured: false,
@@ -138,7 +144,7 @@ export const items: Item[] = [
       "Vintage styling",
       "Standard bulb socket",
     ],
-    image: "/images/desk-lamp.jpg",
+    images: [],
     imageAlt: "Vintage brass desk lamp",
     hasDedicatedPage: false,
     featured: false,
