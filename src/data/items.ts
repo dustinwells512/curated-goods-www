@@ -13,7 +13,7 @@ export interface Item {
   hasDedicatedPage: boolean;
   externalUrl?: string;
   featured: boolean;
-  status: "available" | "pending" | "sold";
+  status: "available" | "pending" | "sold" | "inactive";
 }
 
 export const items: Item[] = [
@@ -92,7 +92,7 @@ export const items: Item[] = [
     imageAlt: "Solid wood farmhouse dining table",
     hasDedicatedPage: false,
     featured: false,
-    status: "available",
+    status: "inactive",
   },
   {
     id: "bookshelf",
@@ -114,7 +114,7 @@ export const items: Item[] = [
     imageAlt: "Mid-century modern bookshelf with walnut finish",
     hasDedicatedPage: false,
     featured: false,
-    status: "available",
+    status: "inactive",
   },
   {
     id: "accent-chair",
@@ -136,7 +136,7 @@ export const items: Item[] = [
     imageAlt: "Cognac leather accent chair",
     hasDedicatedPage: false,
     featured: false,
-    status: "available",
+    status: "inactive",
   },
   {
     id: "desk-lamp",
@@ -158,20 +158,24 @@ export const items: Item[] = [
     imageAlt: "Vintage brass desk lamp",
     hasDedicatedPage: false,
     featured: false,
-    status: "available",
+    status: "inactive",
   },
 ];
+
+export function getActiveItems(): Item[] {
+  return items.filter((item) => item.status !== "inactive");
+}
 
 export function getItemBySlug(slug: string): Item | undefined {
   return items.find((item) => item.slug === slug);
 }
 
 export function getFeaturedItems(): Item[] {
-  return items.filter((item) => item.featured);
+  return items.filter((item) => item.featured && item.status !== "inactive");
 }
 
 export function getItemsByCategory(category: string): Item[] {
-  return items.filter((item) => item.category === category);
+  return items.filter((item) => item.category === category && item.status !== "inactive");
 }
 
 export function getCategories(): string[] {

@@ -7,6 +7,7 @@ function StatusBadge({ status }: { status: Item["status"] }) {
     available: "bg-green-100 text-green-800",
     pending: "bg-yellow-100 text-yellow-800",
     sold: "bg-warm-200 text-warm-600",
+    inactive: "bg-warm-200 text-warm-400",
   };
 
   return (

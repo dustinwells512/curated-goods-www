@@ -4,12 +4,13 @@ import Footer from "@/components/Footer";
 import ItemCard from "@/components/ItemCard";
 import ContactForm from "@/components/ContactForm";
 import VisitTracker from "@/components/VisitTracker";
-import { items, getFeaturedItems, getCategories } from "@/data/items";
+import { items, getFeaturedItems, getCategories, getActiveItems } from "@/data/items";
 
 export default function Home() {
   const featured = getFeaturedItems();
   const categories = getCategories();
-  const nonFeatured = items.filter((item) => !item.featured);
+  const activeItems = getActiveItems();
+  const nonFeatured = activeItems.filter((item) => !item.featured);
 
   return (
     <div className="min-h-screen bg-warm-50">
