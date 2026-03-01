@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ItemCard from "@/components/ItemCard";
@@ -16,13 +17,23 @@ export default function Home() {
       <Header />
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-warm-900 px-6 py-24 text-center sm:py-32">
-        <div className="absolute inset-0 bg-gradient-to-br from-warm-900 via-warm-800 to-accent/30" />
-        <div className="relative mx-auto max-w-3xl">
-          <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+      <section className="relative overflow-hidden bg-warm-900 text-center">
+        <div className="absolute inset-0">
+          <Image
+            src="/images/hero-bg.jpg"
+            alt=""
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-warm-900/60" />
+        </div>
+        <div className="relative mx-auto max-w-3xl px-6 py-28 sm:py-36">
+          <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl drop-shadow-lg">
             Curated Goods
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-lg text-warm-300">
+          <p className="mx-auto mt-4 max-w-xl text-lg text-warm-200 drop-shadow-md">
             Quality items from my home to yours. Each piece has been personally
             selected and well cared for.
           </p>
