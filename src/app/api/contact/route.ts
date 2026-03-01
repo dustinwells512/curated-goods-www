@@ -381,7 +381,7 @@ async function sendAutoReply(data: {
   </ol>
   ${externalSiteNote}
 
-  <p>Just reply to this email and we'll go from there.</p>
+  <p>Just reply to this email and I'll go from there.</p>
 
   <p style="margin-top: 2rem;">
     Talk soon,<br>
@@ -391,7 +391,7 @@ async function sendAutoReply(data: {
   <hr style="border: none; border-top: 1px solid #eee; margin: 2rem 0;">
   <p style="font-size: 0.85rem; color: #999;">
     Curated Goods &bull; Quality items, personally selected<br>
-    <a href="https://curatedgoods.dustinwells.com" style="color: #2c5545;">View all items</a>
+    <a href="https://curated.dustinwells.com" style="color: #2c5545;">View all items</a>
   </p>
 </div>`;
 
@@ -407,14 +407,14 @@ A few quick questions so I can give you the most useful info:
 
 ${questions.map((q, i) => `${i + 1}. ${q.replace(/<\/?strong>/g, "")}`).join("\n")}
 ${externalSiteNoteText}
-Just reply to this email and we'll go from there.
+Just reply to this email and I'll go from there.
 
 Talk soon,
 Dustin
 
 ---
 Curated Goods | Quality items, personally selected
-View all items: https://curatedgoods.dustinwells.com`;
+View all items: https://curated.dustinwells.com`;
 
   await fetch("https://api.sendgrid.com/v3/mail/send", {
     method: "POST",
