@@ -24,27 +24,19 @@ const DISPOSABLE_EMAIL_DOMAINS = new Set([
   "grr.la", "dispostable.com", "yopmail.com", "maildrop.cc",
 ]);
 
-const TYPE_LABELS: Record<string, string> = {
-  inquiry: "Ask a Question",
-  offer: "Make an Offer",
-  purchase: "Purchase This Item",
-  schedule: "Schedule a Viewing",
-};
-
-// Map item IDs to their categories for context-aware replies
-const ITEM_CATEGORIES: Record<string, string> = {
-  "sprinter-van": "vehicle",
-  piano: "instrument",
-  "dining-table": "furniture",
-  bookshelf: "furniture",
-  "accent-chair": "furniture",
-  "desk-lamp": "decor",
-};
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, email, phone, item, type, message, timeOnPage, visitCount, firstVisit, referrer } = body;
+    const { name, email, phone, items: selectedItems, type, message, timeOnPage, visitCount, firstVisit, referrer } = body;
+    // Normalize: support both legacy single "item" and new "items" array
+    const itemsArray: string[] = Array.isArray(selectedItems)
+      ? selectedItems
+      : selectedItems
+      ? [selectedItems]
+      : body.item
+      ? [body.item]
+      : [];
 
     if (!name || !email || !message) {
       return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
@@ -116,7 +108,7 @@ export async function POST(req: NextRequest) {
           email,
           phone: phone || "",
           message,
-          item: item || "",
+          items: itemsArray,
           type: type || "inquiry",
         },
         metadata,
@@ -147,7 +139,7 @@ export async function POST(req: NextRequest) {
     );
 
     // Send auto-reply email (non-blocking -- don't fail the submission if email fails)
-    sendAutoReply({ name, email, message, item, type: type || "inquiry" }).catch((e) =>
+    sendAutoReply({ name, email, message, items: itemsArray, type: type || "inquiry" }).catch((e) =>
       console.error("Auto-reply failed:", e)
     );
 
@@ -329,7 +321,7 @@ async function sendAutoReply(data: {
   name: string;
   email: string;
   message: string;
-  item: string;
+  items: string[];
   type: string;
 }) {
   const sgKey = process.env.SENDGRID_API_KEY;
@@ -339,82 +331,80 @@ async function sendAutoReply(data: {
   }
 
   const firstName = data.name.split(" ")[0];
-  const typeLabel = TYPE_LABELS[data.type] || data.type;
-  const selectedItem = items.find((i) => i.id === data.item);
-  const itemTitle = selectedItem?.title || "one of the items";
-  const itemCategory = ITEM_CATEGORIES[data.item] || "general";
+  const selectedItems = data.items
+    .map((id) => items.find((i) => i.id === id))
+    .filter(Boolean) as (typeof items)[number][];
 
-  // Generate contextual line based on their message and item
-  const contextLine = generateContextLine(data.message, data.item, itemCategory);
+  // Build item names for display
+  const itemTitles = selectedItems.map((i) => i.title);
+  const itemsLabel =
+    itemTitles.length === 0
+      ? "some of the items"
+      : itemTitles.length === 1
+      ? `the ${itemTitles[0]}`
+      : itemTitles.length === 2
+      ? `the ${itemTitles[0]} and the ${itemTitles[1]}`
+      : `${itemTitles.slice(0, -1).map((t) => `the ${t}`).join(", ")}, and the ${itemTitles[itemTitles.length - 1]}`;
 
-  // Generate qualifying questions based on item category
-  const questions = generateQuestions(data.item, itemCategory, selectedItem);
+  // Deduplicate locations across selected items
+  const locations = [...new Set(selectedItems.map((i) => i.location).filter(Boolean))];
+  const locationLine =
+    locations.length === 0
+      ? ""
+      : locations.length === 1
+      ? `Just so you know, ${selectedItems.length === 1 ? "this item is" : "these items are"} located in <strong>${locations[0]}</strong> and would need to be picked up locally.`
+      : `These items are spread across a couple locations: <strong>${locations.join("</strong> and <strong>")}</strong>. Pickup would be local to each.`;
 
-  // Check if item has a dedicated external site
-  const externalSiteNote = selectedItem?.externalUrl
-    ? `\n  <p style="background: #f5f3ef; padding: 12px 16px; border-radius: 8px; margin-top: 16px;">
-    For full details, photos, and specs on the <strong>${selectedItem.title}</strong>, check out the dedicated listing page:<br>
-    <a href="${selectedItem.externalUrl}" style="color: #2c5545; font-weight: 600;">${selectedItem.externalUrl}</a>
-  </p>`
+  const locationLineText = locationLine.replace(/<\/?strong>/g, "");
+
+  // External listing links
+  const externalItems = selectedItems.filter((i) => i.externalUrl);
+  const externalNote = externalItems.length > 0
+    ? externalItems.map((i) =>
+        `<p style="background: #f5f3ef; padding: 12px 16px; border-radius: 8px; margin-top: 12px;">Full details on the <strong>${i.title}</strong>: <a href="${i.externalUrl}" style="color: #2c5545; font-weight: 600;">${i.externalUrl}</a></p>`
+      ).join("")
+    : "";
+  const externalNoteText = externalItems.length > 0
+    ? "\n" + externalItems.map((i) => `Full details on the ${i.title}: ${i.externalUrl}`).join("\n") + "\n"
     : "";
 
-  const externalSiteNoteText = selectedItem?.externalUrl
-    ? `\nFor full details, photos, and specs on the ${selectedItem.title}, check out the dedicated listing page:\n${selectedItem.externalUrl}\n`
-    : "";
-
-  const subject = `Thanks for your interest${selectedItem ? ` in the ${selectedItem.title}` : ""}, ${firstName}`;
+  const subject = `Thanks for your interest${selectedItems.length === 1 ? ` in the ${selectedItems[0].title}` : selectedItems.length > 1 ? " in some Curated Goods" : ""}, ${firstName}`;
 
   const htmlBody = `
 <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
   <p>Hi ${firstName},</p>
 
-  <p>Thanks for reaching out${selectedItem ? ` about the <strong>${selectedItem.title}</strong>` : ""} &mdash; I got your message.</p>
+  <p>Thanks for reaching out${selectedItems.length > 0 ? ` about ${itemsLabel}` : ""}. Got your message.</p>
 
-  ${contextLine ? `<p>${contextLine}</p>` : ""}
+  ${locationLine ? `<p>${locationLine}</p>` : ""}
+  ${externalNote}
 
-  <p>You selected <strong>${typeLabel.toLowerCase()}</strong> &mdash; that helps me know how best to help.</p>
-
-  <p>A few quick questions so I can give you the most useful info:</p>
-
-  <ol style="line-height: 1.8;">
-    ${questions.map((q) => `<li>${q}</li>`).join("\n    ")}
-  </ol>
-  ${externalSiteNote}
-
-  <p>Just reply to this email and I'll go from there.</p>
+  <p>Reply to this email to confirm that works for you and we'll set up a time to talk.</p>
 
   <p style="margin-top: 2rem;">
-    Talk soon,<br>
-    <strong>Dustin</strong>
+    Dustin
   </p>
 
   <hr style="border: none; border-top: 1px solid #eee; margin: 2rem 0;">
   <p style="font-size: 0.85rem; color: #999;">
-    Curated Goods &bull; Quality items, personally selected<br>
-    <a href="https://curated.dustinwells.com" style="color: #2c5545;">View all items</a>
+    Curated Goods<br>
+    <a href="https://curated.dustinwells.com" style="color: #2c5545;">curated.dustinwells.com</a>
   </p>
 </div>`;
 
   const textBody = `Hi ${firstName},
 
-Thanks for reaching out${selectedItem ? ` about the ${selectedItem.title}` : ""} — I got your message.
+Thanks for reaching out${selectedItems.length > 0 ? ` about ${itemsLabel}` : ""}. Got your message.
 
-${contextLine || ""}
+${locationLineText}
+${externalNoteText}
+Reply to this email to confirm that works for you and we'll set up a time to talk.
 
-You selected ${typeLabel.toLowerCase()} — that helps me know how best to help.
-
-A few quick questions so I can give you the most useful info:
-
-${questions.map((q, i) => `${i + 1}. ${q.replace(/<\/?strong>/g, "")}`).join("\n")}
-${externalSiteNoteText}
-Just reply to this email and I'll go from there.
-
-Talk soon,
 Dustin
 
 ---
-Curated Goods | Quality items, personally selected
-View all items: https://curated.dustinwells.com`;
+Curated Goods
+curated.dustinwells.com`;
 
   await fetch("https://api.sendgrid.com/v3/mail/send", {
     method: "POST",
@@ -433,107 +423,5 @@ View all items: https://curated.dustinwells.com`;
       ],
     }),
   });
-}
-
-// ---------------------------------------------------------------------------
-// Context line generation — message + item category aware
-// ---------------------------------------------------------------------------
-
-function generateContextLine(message: string, itemId: string, category: string): string {
-  const lower = message.toLowerCase();
-
-  // Message keyword matching first (takes priority)
-  if (lower.includes("price") || lower.includes("offer") || lower.includes("cost") || lower.includes("budget") || lower.includes("negotiate")) {
-    return "I'm always happy to have a straightforward conversation about pricing.";
-  }
-  if (lower.includes("view") || lower.includes("see") || lower.includes("visit") || lower.includes("look at") || lower.includes("come by")) {
-    return "Nothing beats seeing it in person — happy to set up a time that works for you.";
-  }
-  if (lower.includes("condition") || lower.includes("damage") || lower.includes("wear") || lower.includes("scratch")) {
-    return "I appreciate you wanting to know the full picture — I'm always upfront about condition.";
-  }
-  if (lower.includes("deliver") || lower.includes("ship") || lower.includes("pickup") || lower.includes("transport")) {
-    return "Good question about logistics — I'm flexible and happy to work out the details.";
-  }
-
-  // Item category-specific fallbacks
-  switch (category) {
-    case "vehicle":
-      if (lower.includes("off-road") || lower.includes("overland") || lower.includes("camp")) {
-        return "I can tell you're interested in the adventure capabilities — this van was built for exactly that.";
-      }
-      if (lower.includes("mile") || lower.includes("engine") || lower.includes("mechanical")) {
-        return "Great that you're looking at the mechanical details — happy to share the full service history.";
-      }
-      return "The Sprinter is a really special build — I'm happy to tell you more about it.";
-
-    case "instrument":
-      if (lower.includes("play") || lower.includes("tune") || lower.includes("sound") || lower.includes("tone")) {
-        return "The sound on this Steinway is wonderful — there's nothing quite like hearing it in person.";
-      }
-      if (lower.includes("art") || lower.includes("paint") || lower.includes("mural") || lower.includes("design")) {
-        return "The artwork by Elenor Niz really makes this piano one of a kind — the photos only capture part of it.";
-      }
-      return "This piano is truly a one-of-a-kind piece — both musically and visually.";
-
-    case "furniture":
-      if (lower.includes("room") || lower.includes("space") || lower.includes("dimension") || lower.includes("fit")) {
-        return "Happy to share exact dimensions or any additional photos from different angles.";
-      }
-      return "This piece has been well cared for and has a lot of life left in it.";
-
-    case "decor":
-      return "This is a quality piece that adds real character to a space.";
-
-    default:
-      return "";
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Qualifying questions — item category aware
-// ---------------------------------------------------------------------------
-
-function generateQuestions(
-  itemId: string,
-  category: string,
-  selectedItem: (typeof items)[number] | undefined
-): string[] {
-  switch (category) {
-    case "vehicle":
-      return [
-        "<strong>What draws you to this particular van?</strong> Whether it's the off-road setup, the interior build, or the overall package — it helps me know what to focus on.",
-        "<strong>Have you owned a Sprinter or done van life before?</strong> Happy to go deeper on the technical details if that's helpful.",
-        "<strong>Are you in Colorado or would you be traveling for pickup?</strong> The van is currently on the Western Slopes and I'm flexible on scheduling viewings.",
-      ];
-
-    case "instrument":
-      return [
-        "<strong>Are you a player, collector, or both?</strong> It helps me understand what matters most to you about this piano.",
-        "<strong>Do you have a space ready for a grand piano?</strong> I can share dimensions and any moving considerations.",
-        "<strong>Would you like to schedule a time to see and play it in person?</strong> It's located in South Austin and viewings are by appointment.",
-      ];
-
-    case "furniture":
-      return [
-        `<strong>What space are you envisioning this for?</strong> I can share more dimensions or photos from specific angles if that helps.`,
-        `<strong>Do you need help with pickup or delivery?</strong> I'm located in the Austin/Colorado area and can discuss logistics.`,
-        `<strong>Is there anything specific about the condition you'd like to know?</strong> Happy to send close-up photos of any area.`,
-      ];
-
-    case "decor":
-      return [
-        "<strong>What room or space are you thinking of putting this in?</strong> I can offer some thoughts on how it fits different settings.",
-        "<strong>Are you looking for other decor items as well?</strong> I may have complementary pieces not yet listed.",
-        "<strong>Would you like to see it in person before deciding?</strong> Happy to arrange a quick viewing.",
-      ];
-
-    default:
-      return [
-        "<strong>What caught your eye about this item?</strong> It helps me share the most relevant details.",
-        "<strong>Do you have any specific questions about condition or dimensions?</strong> Happy to provide more photos.",
-        "<strong>Are you local to the area or would we need to arrange shipping?</strong> I'm flexible on logistics.",
-      ];
-  }
 }
 

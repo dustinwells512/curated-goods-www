@@ -5,6 +5,7 @@ export interface Item {
   subtitle: string;
   price: string;
   category: string;
+  location: string;
   description: string;
   details: string[];
   images: string[];
@@ -23,6 +24,7 @@ export const items: Item[] = [
     subtitle: "Professional conversion — adventure-ready",
     price: "Contact for Price",
     category: "Vehicles",
+    location: "Western Slope, Colorado",
     description:
       "A 2020 Mercedes Sprinter with a professional camper conversion by Tommy Camper Vans. Features a custom interior build with sleeping area, kitchenette, solar power, and ample storage. Perfect for weekend getaways or full-time van life.",
     details: [
@@ -49,6 +51,7 @@ export const items: Item[] = [
     subtitle: "1955 Model L — One-of-a-kind hand-painted masterpiece",
     price: "$27,500",
     category: "Instruments",
+    location: "South Austin, TX",
     description:
       "A one-of-a-kind 1955 Steinway Model L grand piano featuring custom hand-painted artwork by Austin muralist Elenor Niz. Where music meets art — vibrant blues, turquoise, hand-painted lions, landscapes, and pop culture elements make this a true statement piece.",
     details: [
@@ -76,6 +79,7 @@ export const items: Item[] = [
     subtitle: "Seats 6, farmhouse style",
     price: "$450",
     category: "Furniture",
+    location: "South Austin, TX",
     description:
       "Solid wood farmhouse-style dining table that comfortably seats six. Beautiful natural grain with a warm finish. Minor surface wear consistent with use.",
     details: [
@@ -97,6 +101,7 @@ export const items: Item[] = [
     subtitle: "Walnut finish, 5 shelves",
     price: "$200",
     category: "Furniture",
+    location: "South Austin, TX",
     description:
       "Stylish mid-century modern bookshelf with walnut finish. Five adjustable shelves provide ample storage for books, decor, and more.",
     details: [
@@ -118,6 +123,7 @@ export const items: Item[] = [
     subtitle: "Cognac leather, great condition",
     price: "$325",
     category: "Furniture",
+    location: "South Austin, TX",
     description:
       "Comfortable leather accent chair in cognac. Solid wood frame with genuine leather upholstery. A statement piece for any living space.",
     details: [
@@ -139,6 +145,7 @@ export const items: Item[] = [
     subtitle: "Vintage-style, adjustable arm",
     price: "$75",
     category: "Decor",
+    location: "South Austin, TX",
     description:
       "Beautiful brass desk lamp with adjustable arm and vintage styling. Works perfectly with a warm, ambient light.",
     details: [

@@ -43,7 +43,7 @@ export default function ContactForm({
           name: data.get("name"),
           email: data.get("email"),
           phone: data.get("phone") || "",
-          item: data.get("item") || "",
+          items: data.getAll("items"),
           type: data.get("type") || "inquiry",
           message: data.get("message"),
           timeOnPage,
@@ -154,47 +154,51 @@ export default function ContactForm({
         />
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div>
-          <label
-            htmlFor="item"
-            className="mb-1.5 block text-sm font-medium text-warm-700"
-          >
-            Item of Interest
-          </label>
-          <select
-            id="item"
-            name="item"
-            defaultValue={preselectedItem || ""}
-            className="w-full rounded-lg border border-warm-200 bg-white px-4 py-2.5 text-sm text-warm-900 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
-          >
-            <option value="">General inquiry</option>
-            {items.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.title}
-              </option>
-            ))}
-          </select>
+      <div>
+        <label className="mb-1.5 block text-sm font-medium text-warm-700">
+          Items of Interest
+        </label>
+        <div className="rounded-lg border border-warm-200 bg-white p-3 space-y-2">
+          {items
+            .filter((item) => item.status === "available" && !item.externalUrl)
+            .map((item) => (
+            <label
+              key={item.id}
+              className="flex items-center gap-3 rounded-md px-2 py-1.5 text-sm text-warm-900 transition-colors hover:bg-warm-50 cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                name="items"
+                value={item.id}
+                defaultChecked={preselectedItem === item.id}
+                className="h-4 w-4 rounded border-warm-300 text-accent focus:ring-accent"
+              />
+              <span>{item.title}</span>
+              <span className="ml-auto text-xs text-warm-400">{item.price}</span>
+            </label>
+          ))}
         </div>
-        <div>
-          <label
-            htmlFor="type"
-            className="mb-1.5 block text-sm font-medium text-warm-700"
-          >
-            I&apos;d Like To
-          </label>
-          <select
-            id="type"
-            name="type"
-            defaultValue="inquiry"
-            className="w-full rounded-lg border border-warm-200 bg-white px-4 py-2.5 text-sm text-warm-900 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
-          >
-            <option value="inquiry">Ask a Question</option>
-            <option value="offer">Make an Offer</option>
-            <option value="purchase">Purchase This Item</option>
-            <option value="schedule">Schedule a Viewing</option>
-          </select>
-        </div>
+        <p className="mt-1 text-xs text-warm-400">Select all that interest you</p>
+      </div>
+
+      <div>
+        <label
+          htmlFor="type"
+          className="mb-1.5 block text-sm font-medium text-warm-700"
+        >
+          I&apos;d Like To
+        </label>
+        <select
+          id="type"
+          name="type"
+          defaultValue="inquiry"
+          className="w-full rounded-lg border border-warm-200 bg-white px-4 py-2.5 text-sm text-warm-900 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+        >
+          <option value="inquiry">Ask a Question</option>
+          <option value="offer">Make an Offer</option>
+          <option value="purchase">Purchase These Items</option>
+          <option value="schedule">Schedule a Viewing</option>
+        </select>
       </div>
 
       <div>
