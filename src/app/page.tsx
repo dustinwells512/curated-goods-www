@@ -1,65 +1,197 @@
-import Image from "next/image";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import ItemCard from "@/components/ItemCard";
+import InquiryForm from "@/components/InquiryForm";
+import { items, getFeaturedItems, getCategories } from "@/data/items";
 
 export default function Home() {
+  const featured = getFeaturedItems();
+  const categories = getCategories();
+  const nonFeatured = items.filter((item) => !item.featured);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen bg-warm-50">
+      <Header />
+
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-warm-900 px-6 py-24 text-center sm:py-32">
+        <div className="absolute inset-0 bg-gradient-to-br from-warm-900 via-warm-800 to-accent/30" />
+        <div className="relative mx-auto max-w-3xl">
+          <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            Curated Goods
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
+          <p className="mx-auto mt-4 max-w-xl text-lg text-warm-300">
+            Quality items from our home to yours. Each piece has been personally
+            selected and well cared for.
+          </p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              href="#items"
+              className="rounded-full bg-white px-8 py-3 text-sm font-semibold text-warm-900 shadow-sm transition-colors hover:bg-warm-100"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
+              Browse Items
+            </a>
             <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              href="#contact"
+              className="rounded-full border border-white/30 px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
             >
-              Learning
-            </a>{" "}
-            center.
+              Get in Touch
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Items */}
+      <section id="items" className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
+        <div className="mb-10 text-center">
+          <h2 className="text-3xl font-bold text-warm-900">Featured Items</h2>
+          <p className="mt-2 text-warm-500">
+            Our highlight pieces — click for full details
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="grid gap-8 md:grid-cols-2">
+          {featured.map((item) => (
+            <ItemCard key={item.id} item={item} featured />
+          ))}
         </div>
-      </main>
+      </section>
+
+      {/* All Items by Category */}
+      {categories.map((category) => {
+        const categoryItems = nonFeatured.filter(
+          (item) => item.category === category
+        );
+        if (categoryItems.length === 0) return null;
+        return (
+          <section
+            key={category}
+            className="mx-auto max-w-6xl px-6 pb-16"
+          >
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-warm-900">{category}</h2>
+              <div className="mt-1 h-0.5 w-12 bg-accent" />
+            </div>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {categoryItems.map((item) => (
+                <ItemCard key={item.id} item={item} />
+              ))}
+            </div>
+          </section>
+        );
+      })}
+
+      {/* About Section */}
+      <section id="about" className="border-t border-warm-200 bg-white">
+        <div className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold text-warm-900">
+              About This Sale
+            </h2>
+            <p className="mt-6 text-lg leading-relaxed text-warm-600">
+              We&apos;re downsizing and letting go of some wonderful items that
+              have served us well. Everything listed here is in good condition
+              and priced to move. We believe in transparency — what you see is
+              what you get.
+            </p>
+            <div className="mt-10 grid gap-8 text-center sm:grid-cols-3">
+              <div>
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
+                  <svg
+                    className="h-6 w-6 text-accent"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="mt-3 font-semibold text-warm-900">
+                  Quality Guaranteed
+                </h3>
+                <p className="mt-1 text-sm text-warm-500">
+                  Every item is honestly described and in the condition stated.
+                </p>
+              </div>
+              <div>
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
+                  <svg
+                    className="h-6 w-6 text-accent"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="mt-3 font-semibold text-warm-900">
+                  Easy Communication
+                </h3>
+                <p className="mt-1 text-sm text-warm-500">
+                  Ask questions, make offers, or schedule a viewing.
+                </p>
+              </div>
+              <div>
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
+                  <svg
+                    className="h-6 w-6 text-accent"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="mt-3 font-semibold text-warm-900">
+                  Fair Pricing
+                </h3>
+                <p className="mt-1 text-sm text-warm-500">
+                  Reasonable prices with room to discuss. We want these items to
+                  find good homes.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact / Inquiry Form */}
+      <section
+        id="contact"
+        className="border-t border-warm-200 bg-warm-100"
+      >
+        <div className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
+          <div className="mx-auto max-w-xl">
+            <div className="mb-8 text-center">
+              <h2 className="text-3xl font-bold text-warm-900">
+                Interested in Something?
+              </h2>
+              <p className="mt-2 text-warm-500">
+                Send us a message and we&apos;ll get back to you quickly.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-warm-200 bg-white p-6 shadow-sm sm:p-8">
+              <InquiryForm />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
     </div>
   );
 }
